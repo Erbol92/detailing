@@ -1,0 +1,249 @@
+@font-face {
+font-family: "Finder";
+src: url("./fonts/Finder.ttf") format("truetype");
+font-style: normal;
+font-weight: bold;
+}
+
+body {
+    margin: 0;
+    font-family: "Finder";
+    height: 100%;
+    background: rgba(0, 0, 0, 0.15);
+    position:relative;
+}
+
+.head {
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Задает минимальную высоту контейнера */
+
+
+}
+
+section {
+    width:90%;
+    margin:auto;
+}
+
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.content {
+    flex: 1;
+    max-width: 1440px;
+
+    max-height: 900px;
+    overflow-y: auto;
+
+
+    width:90%;
+    margin: auto;
+}
+.header {
+    position: sticky;
+    height: 120px;
+    background: #292e2b;
+    display: flex;
+    padding: 5px;
+    box-shadow: 0px 9px 20px 0px black;
+}
+
+.header__links {
+    width:100%;
+    align-content: center;
+}
+
+.header__links ul{
+    display: flex;
+    justify-content: space-around;
+}
+
+.header__links li{
+    display:inline-block;
+    padding: 10px;
+}
+
+.header__links li:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 25%;
+}
+
+.header__links a {
+
+    font-size:24px;
+}
+
+.header__logo, .logo {
+    width: 128px;
+    border-radius: 50%;
+}
+
+.preview {
+    background-image: url(./images/tuning_bg_1.jpg);
+    background-repeat: no-repeat;
+    background-position:center center;
+    background-size: cover;
+    height: 400px;
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    flex-wrap: wrap;
+    padding:10px;
+}
+.preview__card {
+    height: 150px;
+    width:30%;
+    background: rgba(255,255,255,0.1);
+    text-align: justify;
+    border-radius: 10%;
+    padding:10px;
+    color: white;
+}
+
+.footer {
+    width:100%;
+    height:120px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    display:flex;
+    justify-content:space-around;
+    bottom: 0;
+    position:fixed;
+}
+
+.footer__card {
+    justify-items: start;
+}
+
+.contact {
+display:block;
+}
+
+.log_auth {
+    text-align: end;
+    padding: 10px;
+    background-color: #333;
+}
+
+.auth_form, .reg_form {
+    position: absolute;
+    width: 600px;
+
+    background-color: rgba(255,255,255,0.7);
+    padding: 15px;
+    top: 50%; /* Сдвиг вниз на 50% от высоты родителя */
+    left: 50%; /* Сдвиг вправо на 50% от ширины родителя */
+    transform: translate(-50%, -50%); /* Сдвиг на половину ширины и высоты элемента */
+}
+
+button {
+    padding:5px;
+    border-radius: 20%;
+    min-width: 70px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+.close {
+    position:absolute;
+    right: 0%;
+    top: 0%;
+    cursor: pointer;
+}
+
+form label,label {
+    display:inline-block;
+    width:100px;
+}
+
+#menu_profile {
+    display: none;
+    position: absolute;
+    #background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    right:100px;
+    width:150px;
+}
+
+#menu_checkbox:checked + #menu_profile {
+    display: block;
+}
+
+h1,h2,h3 {
+    text-align: center;
+    }
+
+.d-flex {
+    display:flex;
+}
+
+.profile_forms {
+    justify-content:space-around;
+    margin-bottom: 15px;
+}
+
+.auto_profile {
+    flex-wrap:wrap;
+}
+
+.card_auto {
+    width: 33%;
+    box-sizing: border-box;
+    padding: 10px;
+}
+.card_auto_inner {
+    box-sizing: border-box;
+    border-left: 1px solid grey;
+    border-bottom: 1px solid grey;
+    padding: 10px;
+}
+
+.card_service {
+        width: 20%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin: 5%;
+        border-left: 1px solid grey;
+        border-bottom: 1px solid grey;
+
+        }
+    .card_auto_inner {
+        box-sizing: border-box;
+
+
+        padding: 10px;
+    }
+    .fixed-height {
+        height: 200px;
+        overflow: auto;
+    }
+    ::-webkit-scrollbar {
+        display: none; /* Скрыть ползунок */
+        }
+    .abtn {
+        padding:10px;
+        background:#333;
+        border-radius: 25%;
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+        }
+    .card_service:hover {
+        transform:scale(1.1);
+    }

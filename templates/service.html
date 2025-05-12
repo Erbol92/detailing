@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="d-flex auto_profile">
+    {% for service in services %}
+    <div class="card_service">
+        <div class="card_service_inner">
+            <p class="fixed-height">{{service.description}}</p>
+        </div>
+        <a href="{% url 'service_detail' pk=service.id %}" class="abtn">{{service.title}}</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+|truncatewords:10

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+{% endblock %}
+{% block main %}
+<h1>ПРОФИЛЬ</h1>
+<div class="d-flex profile_forms">
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+        <div class="d-flex">
+            <button type="submit" name="action_user">ok</button>
+            <button type="reset">очистить</button>
+        </div>
+    </form>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{auto_form.as_p}}
+        <div class="d-flex">
+            <button type="submit" name="action_auto">ok</button>
+            <button type="reset">очистить</button>
+        </div>
+    </form>
+</div>
+<h2>Мои автомобили </h2>
+<div class="d-flex auto_profile">
+
+    {% for auto in user.autos.all %}
+    <div class="card_auto">
+        <div class="card_auto_inner">
+            <p><span>марка:</span>{{ auto.mark }}</p>
+            <p><span>модель:</span>{{ auto.model }}</p>
+            <p><span>год:</span>{{ auto.year }}</p>
+            <p><span>цвет:</span>{{ auto.color }}</p>
+            <p><span>VIN:</span>{{ auto.vin }}</p>
+            <p><span>№ машины:</span>{{ auto.auto_number }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#id_auto_form-mark').change(function() {
+            var markId = $(this).val();
+            $.ajax({
+                url: '{% url "get_models" %}',
+                data: {
+                    'mark_id': markId
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#id_auto_form-model').empty();
+                    $('#id_auto_form-model').append('<option value="">Выберите модель</option>');
+                    $.each(data, function(index, model) {
+                        $('#id_auto_form-model').append('<option value="' + model.id + '">' + model.title + '</option>');
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

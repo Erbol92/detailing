@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детейлинг центр</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="head">
+        <div class="log_auth">
+            <div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'user_logout' %}">{{request.user}}, выйти</a>
+                <label for="menu_checkbox" style="color:white; text-align:start;">»</label>
+                <input type="checkbox" id="menu_checkbox" style="display: none;">
+                <div id="menu_profile">
+                    <a href="{% url 'profile' %}">профиль</a>
+                </div>
+                {% else %}
+                <button onclick="ShowElement('auth_form')">войти</button>
+                |
+                <button onclick="ShowElement('reg_form')">регистрация</button>
+                {% endif %}
+            </div>
+        </div>
+        <header class="header">
+            <div class="header__logo">
+                <img class="logo" src="https://svgsilh.com/svg/1296837.svg">
+            </div>
+            <div class="header__links">
+                <ul>
+                    <li><a href="{% url 'main' %}">Главная</a></li>
+                    <li><a href="{% url 'service' %}">Услуги</a></li>
+                    <li><a href="http://">О нас</a></li>
+                    <li><a href="http://">Наши работы</a></li>
+                    <li><a href="http://">test</a></li>
+                    <li><a href="http://">test</a></li>
+                </ul>
+            </div>
+        </header>
+    </div>
+
+    <div class="content">
+        <form action="{% url 'request_auth_form_processor' %}" class="auth_form" method="POST" id="auth_form" style="display:none;">
+            <span class="close" onclick="CloseElement('auth_form')">❌</span>
+            {% csrf_token %}
+            {{auth_form.as_p}}
+            <button type="submit" name="action" value="auth" style="margin-top:10px;">ok</button>
+        </form>
+
+        <form action="{% url 'request_auth_form_processor' %}" class="reg_form" method="POST" id="reg_form" style="display:none;">
+            <span class="close" onclick="CloseElement('reg_form')">❌</span>
+            {% csrf_token %}
+            {{creating_form}}
+            <div
+                    id="captcha-container"
+                    class="smart-captcha"
+                    data-sitekey="ysc1_T5wAComf2dqR9UoOd9FbhQtbzSrm4lPIMiQnusBH175bbc70"
+                    style="height: 100px"
+            ></div>
+            <button type="submit" name="action" value="reg" style="margin-top:10px;">ok</button>
+        </form>
+
+        <script src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>
+        {% block content %}
+        <section class="preview">
+            <div class="preview__card">
+                <h3>гарантия</h3>
+                <p>
+                    Действует официальная гарантия от 1 года на все работы и запчасти
+                </p>
+            </div>
+            <div class="preview__card">
+                <h3>качество</h3>
+                <p>
+                    Наши Все мастера прошли многоступенчатое обучение. Имеем более 100 отзывов довольных клиентов
+                </p>
+            </div>
+            <div class="preview__card">
+                <h3>цены</h3>
+                <p>
+                    Прямые поставки от производителей составов позволяют снизить стоимость услуг
+                </p>
+            </div>
+        </section>
+        {% endblock %}
+        {% block main %}
+        {% endblock %}
+    </div>
+
+
+    <footer class="footer">
+        <div class="footer__card">
+            <p>ДаукаСервис</p>
+            <a href="#">О нас</a>
+        </div>
+        <div class="footer__card">
+            <p>Наш адрес</p>
+            <a class="contact" href="tel:83362250505">8(33622)5-05-05</a>
+            <a class="contact" href="mail:mail@mail.ru">mail@mail.ru</a>
+            <a class="contact" target="_blank" href="https://yandex.ru/maps/?text=Байконур, ул. Юрия Гагарина, 5">Байконур,
+                ул. Юрия
+                Гагарина, 5</a>
+        </div>
+        <div class="footer__card">
+            <p>Соцсети</p>
+            <a href="#"><img src="{% static 'images/ico/vk_ico.png' %}" width="48"></a>
+            <a href="#"><img src="{% static 'images/ico/wa_ico.png' %}" width="48"></a>
+            <a href="#"><img src="{% static 'images/ico/tg_ico.png' %}" width="48"></a>
+        </div>
+    </footer>
+</div>
+
+<script src="{% static 'myJs.js' %}"></script>
+
+</body>
+</html>
