@@ -6,7 +6,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from .forms import ProfileForm, UserForm
+from .forms import ProfileForm, UserForm, LegalEntity
+from .models import Profile
 
 
 # Create your views here.
@@ -14,15 +15,17 @@ from .forms import ProfileForm, UserForm
 def auth_form_processor(request):
     creating_form = UserCreationForm()
     auth_form = AuthenticationForm()
+    creating_form_legal = LegalEntity()
     return {
         'creating_form': creating_form,
         'auth_form': auth_form,
+        'creating_form_legal': creating_form_legal,
     }
 
 
 def request_auth_form_processor(request):
     creating_form = UserForm(request.POST or None)
-    creating_form_legal = UserCreationForm(request.POST or None)
+    creating_form_legal = LegalEntity(request.POST or None)
     auth_form = AuthenticationForm(request, data=request.POST or None)
 
     if request.method == 'POST':
@@ -38,14 +41,15 @@ def request_auth_form_processor(request):
                 if creating_form.is_valid():
                     user = creating_form.save()
                     login(request, user)
-
+            case 'reg':
+                if creating_form_legal.is_valid():
+                    user = creating_form_legal.save()
+                    login(request, user)
         return redirect('main')
 
 
 def main(request):
     context = {
-        # 'creating_form': creating_form,
-        # 'auth_form': auth_form,
     }
     return render(request, 'main.html', context)
 
@@ -65,7 +69,8 @@ def get_models(request):
 
 @login_required
 def profile(request):
-    profile_form = ProfileForm(request.POST or None, instance=request.user.user_profile, prefix='profile_form')
+    profile_form = ProfileForm(request.POST or None, instance=request.user.user_profile if Profile.objects.filter(
+        user=request.user) else None, prefix='profile_form')
     user_form = UserForm(request.POST or None, instance=request.user, prefix='user_form')
     auto_form = AutoForm(request.POST or None, prefix='auto_form')
     print(request.POST)

@@ -63,6 +63,7 @@ class Service(models.Model):
     description = models.TextField('описание')
     how_long = models.FloatField('сколько часов', default=0)
     group = models.ForeignKey(GroupService, verbose_name='группа', on_delete=models.CASCADE)
+    user = models.ManyToManyField(CustomUser,verbose_name='Мастера', related_name='services')
 
     class Meta:
         verbose_name = 'Услуга'

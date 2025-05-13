@@ -21,7 +21,9 @@
                 {% else %}
                 <button onclick="ShowElement('auth_form')">войти</button>
                 |
-                <button onclick="ShowElement('reg_form')">регистрация</button>
+                <button onclick="ShowElement('reg_form')">регистрация физ лиц</button>
+                |
+                <button onclick="ShowElement('reg_form_legal')">регистрация Юр лиц</button>
                 {% endif %}
             </div>
         </div>
@@ -36,7 +38,7 @@
                     <li><a href="http://">О нас</a></li>
                     <li><a href="http://">Наши работы</a></li>
                     <li><a href="http://">test</a></li>
-                    <li><a href="http://">test</a></li>
+                    <li><a href="{% url 'calendar_events' %}">записи</a></li>
                 </ul>
             </div>
         </header>
@@ -53,7 +55,20 @@
         <form action="{% url 'request_auth_form_processor' %}" class="reg_form" method="POST" id="reg_form" style="display:none;">
             <span class="close" onclick="CloseElement('reg_form')">❌</span>
             {% csrf_token %}
-            {{creating_form}}
+            {{creating_form.as_p}}
+            <div
+                    id="captcha-container"
+                    class="smart-captcha"
+                    data-sitekey="ysc1_T5wAComf2dqR9UoOd9FbhQtbzSrm4lPIMiQnusBH175bbc70"
+                    style="height: 100px"
+            ></div>
+            <button type="submit" name="action" value="reg" style="margin-top:10px;">ok</button>
+        </form>
+
+        <form action="{% url 'request_auth_form_processor' %}" class="reg_form" method="POST" id="reg_form_legal" style="display:none;">
+            <span class="close" onclick="CloseElement('reg_form_legal')">❌</span>
+            {% csrf_token %}
+            {{creating_form_legal.as_p}}
             <div
                     id="captcha-container"
                     class="smart-captcha"

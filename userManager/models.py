@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class CustomUser(AbstractUser):
-    inn = models.PositiveIntegerField('ИНН', blank=True)
+    inn = models.PositiveIntegerField('ИНН', blank=True, null=True, unique=True)
 
 
 class Profile(models.Model):

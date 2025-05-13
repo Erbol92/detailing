@@ -19,3 +19,7 @@ def service_detail(request, pk: int):
         'object': object,
     }
     return render(request, 'service_detail.html', context)
+
+def calendar_events(request):
+    context = {}
+    return render(request, 'calendar_events.html', context)

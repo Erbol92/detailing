@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    #monthYear {
+        margin: auto;
+    }
+    .day {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .day:hover {
+        background-color: #f0f0f0;
+    }
+
+    .time-picker {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .time-selection {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .time-options, .appointments {
+        width: 45%;
+    }
+
+    .time-options div, .appointments div {
+        margin: 5px 0;
+    }
+
+    .time-options button {
+        display: block;
+        margin: 5px 0;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .time-options button:hover {
+        background-color: #d0e0f0;
+    }
+
+    #nameInput {
+        margin-top: 10px;
+        padding: 5px;
+        width: calc(100% - 12px);
+    }
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .calendar {
+        width: 300px;
+        margin: 20px auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+    }
+    #timePicker {
+        position: absolute;
+        width: 900px;
+        top: 50%; /* Сдвиг вниз на 50% от высоты родителя */
+        left: 50%; /* Сдвиг вправо на 50% от ширины родителя */
+        transform: translate(-50%, -50%); /* Сдвиг на половину ширины и высоты элемента */
+        }
+</style>
+<div class="calendar">
+    <div class="header">
+        <h2 id="monthYear"></h2>
+    </div>
+    <div class="days">
+        <div class="day" id="day-1">1</div>
+        <div class="day" id="day-2">2</div>
+        <div class="day" id="day-3">3</div>
+        <div class="day" id="day-4">4</div>
+        <div class="day" id="day-5">5</div>
+        <div class="day" id="day-6">6</div>
+        <div class="day" id="day-7">7</div>
+        <div class="day" id="day-8">8</div>
+        <div class="day" id="day-9">9</div>
+        <div class="day" id="day-10">10</div>
+        <div class="day" id="day-11">11</div>
+        <div class="day" id="day-12">12</div>
+        <div class="day" id="day-13">13</div>
+        <div class="day" id="day-14">14</div>
+        <div class="day" id="day-15">15</div>
+        <div class="day" id="day-16">16</div>
+        <div class="day" id="day-17">17</div>
+        <div class="day" id="day-18">18</div>
+        <div class="day" id="day-19">19</div>
+        <div class="day" id="day-20">20</div>
+        <div class="day" id="day-21">21</div>
+        <div class="day" id="day-22">22</div>
+        <div class="day" id="day-23">23</div>
+        <div class="day" id="day-24">24</div>
+        <div class="day" id="day-25">25</div>
+        <div class="day" id="day-26">26</div>
+        <div class="day" id="day-27">27</div>
+        <div class="day" id="day-28">28</div>
+        <div class="day" id="day-29">29</div>
+        <div class="day" id="day-30">30</div>
+        <div class="day" id="day-31">31</div>
+    </div>
+</div>
+
+<div id="timePicker" class="time-picker" style="display: none;">
+    <span class="close" onclick="CloseElement('timePicker')">❌</span>
+    <h3>Выберите время:</h3>
+    <div class="time-selection">
+        <div class="time-options">
+            <h4>Часы</h4>
+            <div id="timeSlots"></div>
+        </div>
+        <div class="appointments">
+            <h4>Записи</h4>
+            <div id="appointmentList"></div>
+        </div>
+    </div>
+    <input type="text" id="nameInput" placeholder="Введите имя"/>
+    <button id="confirmTime">Записать</button>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let currentDate = new Date(); // Получаем текущую дату
+        const monthYear = document.getElementById("monthYear");
+        const days = document.querySelectorAll(".day");
+        const timePicker = document.getElementById("timePicker");
+        const confirmTime = document.getElementById("confirmTime");
+        const timeSlots = document.getElementById("timeSlots");
+        const appointmentList = document.getElementById("appointmentList");
+        const nameInput = document.getElementById("nameInput");
+        let selectedDay = null;
+        let appointments = {};
+
+        function renderCalendar() {
+            monthYear.textContent = `${currentDate.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' })}`;
+
+            // Скрыть все дни
+            days.forEach(day => {
+                day.style.display = "none";
+            });
+
+            // Отобразить 30 дней, начиная с текущей даты
+            for (let i = 0; i < 30; i++) {
+                const dayElement = document.getElementById(`day-${i + 1}`);
+                const date = new Date(currentDate);
+                date.setDate(currentDate.getDate() + i);
+                dayElement.textContent = date.getDate(); // Устанавливаем текст дня
+                dayElement.style.display = "block"; // Показываем день
+
+                // Выделить текущий день
+                if (i === 0) {
+                    dayElement.style.backgroundColor = "#d0e0f0"; // Подсветка текущего дня
+                }
+
+                dayElement.onclick = () => openTimePicker(date.getDate());
+            }
+        }
+
+        function openTimePicker(day) {
+            selectedDay = day;
+            timePicker.style.display = "block";
+            timeSlots.innerHTML = ""; // Очистить предыдущие слоты времени
+            appointmentList.innerHTML = ""; // Очистить предыдущие записи
+
+            // Создать кнопки для выбора времени с 9 до 18
+            for (let hour = 9; hour <= 18; hour++) {
+                const hourString = hour.toString().padStart(2, '0') + ":00";
+                const button = document.createElement("button");
+                button.textContent = hourString;
+                button.onclick = () => showAppointments(hourString);
+                timeSlots.appendChild(button);
+            }
+        }
+
+        function showAppointments(hourString) {
+            // Отобразить записи для выбранного времени
+            appointmentList.innerHTML = ""; // Очистить предыдущие записи
+            const key = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${selectedDay} ${hourString}`;
+            const names = appointments[key] || [];
+
+            if (names.length === 0) {
+                appointmentList.innerHTML = "<div>Нет записей на это время.</div>";
+            } else {
+                names.forEach(name => {
+                    const div = document.createElement("div");
+                    div.textContent = name;
+                    appointmentList.appendChild(div);
+                });
+            }
+        }
+
+        confirmTime.onclick = () => {
+            const hourString = timeSlots.querySelector("button:hover")?.textContent;
+            if (selectedDay && hourString && nameInput.value) {
+                const key = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${selectedDay} ${hourString}`;
+                if (!appointments[key]) {
+                    appointments[key] = [];
+                }
+                appointments[key].push(nameInput.value);
+                nameInput.value = ""; // Очистить поле ввода
+                showAppointments(hourString); // Обновить список записей
+            } else {
+                alert("Пожалуйста, выберите время и введите имя.");
+            }
+        };
+
+        renderCalendar();
+    });
+
+
+</script>
+{% endblock %}
