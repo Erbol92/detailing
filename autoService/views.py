@@ -21,5 +21,9 @@ def service_detail(request, pk: int):
     return render(request, 'service_detail.html', context)
 
 def calendar_events(request):
-    context = {}
+    services = Service.objects.all()
+    context = {
+        'services': services,
+        'asd': range(20),
+    }
     return render(request, 'calendar_events.html', context)
