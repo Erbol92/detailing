@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from .forms import ProfileForm, UserForm, LegalEntity
+from .forms import ProfileForm, UserForm, LegalEntity, ProfileUserForm
 from .models import Profile
 
 
@@ -71,7 +71,7 @@ def get_models(request):
 def profile(request):
     profile_form = ProfileForm(request.POST or None, instance=request.user.user_profile if Profile.objects.filter(
         user=request.user) else None, prefix='profile_form')
-    user_form = UserForm(request.POST or None, instance=request.user, prefix='user_form')
+    user_form = ProfileUserForm(request.POST or None, instance=request.user, prefix='user_form')
     auto_form = AutoForm(request.POST or None, prefix='auto_form')
     print(request.POST)
     if 'action_user' in request.POST:
