@@ -20,4 +20,4 @@ class PriceServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ['title','description','how_long','group',]
+    list_display = ['title','description','group',]

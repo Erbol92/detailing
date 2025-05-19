@@ -20,3 +20,27 @@ class Profile(models.Model):
     class Meta:
         verbose_name = 'профиль'
         verbose_name_plural = 'профили'
+
+class ScheduleRecord(models.Model):
+    user = models.ForeignKey(CustomUser, verbose_name='Мастер', on_delete=models.CASCADE, related_name='records')
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return f'мастер {self.user}'
+
+    class Meta:
+        verbose_name = 'запись'
+        verbose_name_plural = 'записи'
+
+class ScheduleWork(models.Model):
+    user = models.ForeignKey(CustomUser, verbose_name='Мастер', on_delete=models.CASCADE, related_name='work_times')
+    date = models.DateField()
+
+    def __str__(self):
+        return f'мастер {self.user}'
+
+    class Meta:
+        verbose_name = 'рабочие дни'
+        verbose_name_plural = 'рабочие дни'

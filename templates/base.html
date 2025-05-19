@@ -56,12 +56,12 @@
             <span class="close" onclick="CloseElement('reg_form')">❌</span>
             {% csrf_token %}
             {{creating_form.as_p}}
-            <div
-                    id="captcha-container"
-                    class="smart-captcha"
-                    data-sitekey="ysc1_T5wAComf2dqR9UoOd9FbhQtbzSrm4lPIMiQnusBH175bbc70"
-                    style="height: 100px"
-            ></div>
+<!--            <div-->
+<!--                    id="captcha-container"-->
+<!--                    class="smart-captcha"-->
+<!--                    data-sitekey="ysc1_T5wAComf2dqR9UoOd9FbhQtbzSrm4lPIMiQnusBH175bbc70"-->
+<!--                    style="height: 100px"-->
+<!--            ></div>-->
             <button type="submit" name="action" value="reg" style="margin-top:10px;">ok</button>
         </form>
 
@@ -75,7 +75,7 @@
                     data-sitekey="ysc1_T5wAComf2dqR9UoOd9FbhQtbzSrm4lPIMiQnusBH175bbc70"
                     style="height: 100px"
             ></div>
-            <button type="submit" name="action" value="reg" style="margin-top:10px;">ok</button>
+            <button type="submit" name="action" value="reg_legal" style="margin-top:10px;">ok</button>
         </form>
 
         <script src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>

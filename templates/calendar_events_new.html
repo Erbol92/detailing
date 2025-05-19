@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 20px;
+        }
+        .day {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        .event {
+            background-color: #f0f8ff;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+        }
+    .tile {
+        max-width: 200px;
+        min-height: 100px;
+        flex: 200px 0 1;
+    }
+    .tile__btn {
+        width: 100%;
+        height: 100%;
+    }
+    .f-wrap {
+        flex-wrap: wrap;
+    }
+    .time-slot {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            width: 30%
+        }
+        .occupied {
+            background-color: #721c24; /* Красный фон для занятых слотов */
+            color: #f8d7da; /* Темный текст для занятых слотов */
+            cursor: not-allowed; /* Указатель "некликабельный" */
+        }
+        .available {
+            background-color: #d4edda; /* Зеленый фон для доступных слотов */
+        }
+    .selected {
+            background-color: #cce5ff; /* Голубой фон для выбранного слота */
+        }
+</style>
+<div class="d-flex f-wrap" style="margin-top: 50px; justify-content:center;">
+    {% for service in services %}
+    <div class="tile">
+        <button class="tile__btn" onclick="loadCalendar('{{service.id}}')">{{service}}</button>
+    </div>
+    {% endfor %}
+</div>
+<div id="calendar" class="calendar"></div>
+<h1>Выберите время</h1>
+<div id="time-slots" class="d-flex f-wrap"></div>
+
+<script>
+    function loadCalendar(serviceId) {
+        // Отправляем AJAX-запрос с помощью fetch
+        fetch(`{% url 'get_schedule_work' %}?service_id=${serviceId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сеть не в порядке: ' + response.statusText);
+                }
+                return response.json(); // Преобразуем ответ в JSON
+            })
+            .then(data => {
+                console.log(data); // Выводим данные в консоль для проверки
+                renderCalendar(data); // Вызов функции для отображения календаря
+            })
+            .catch(error => {
+                console.error('Ошибка:', error); // Обработка ошибок
+            });
+    }
+
+    function renderCalendar(data) {
+                const calendarElement = document.getElementById('calendar');
+                calendarElement.innerHTML = ''; // Очистить календарь перед отображением
+
+                // Создаем массив для уникальных дней из расписания
+                const uniqueDays = new Set();
+
+                // Собираем уникальные дни из расписания
+                for (const userId in data) {
+                    const schedules = data[userId].schedules;
+                    schedules.forEach(schedule => {
+                        const scheduleDate = new Date(schedule.date);
+                        uniqueDays.add(scheduleDate.toDateString()); // Используем toDateString для уникальности
+                    });
+                }
+
+                // Отображаем только уникальные дни
+                uniqueDays.forEach(dateString => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'day';
+                    const date = new Date(dateString);
+    <!--                dayElement.innerText = date.getDate(); // Отображаем только день месяца-->
+
+                    // Проверяем, есть ли события на этот день
+                    for (const userId in data) {
+                        const user = data[userId];
+                        const schedules = user.schedules;
+
+                        schedules.forEach((schedule, idx) => {
+                            const scheduleDate = new Date(schedule.date);
+                            if (scheduleDate.toDateString() === dateString) {
+                                const eventElement = document.createElement('div');
+                                const buttonElement = document.createElement('button');
+                                eventElement.className = 'event';
+                                buttonElement.innerText = `${user.name}`;
+                                buttonElement.onclick = function() {
+                                    getScheduleRecord(scheduleDate.toLocaleDateString(), userId);
+                                };
+                                eventElement.innerText = `${scheduleDate.toLocaleDateString()}`;
+                                dayElement.appendChild(buttonElement);
+                                dayElement.appendChild(eventElement);
+
+                            }
+                        });
+                    }
+
+                    calendarElement.appendChild(dayElement);
+                });
+            }
+
+        function getScheduleRecord(date, userId) {
+            console.log(date,userId);
+            let startSlot = null; // Переменная для хранения выбранного начала
+        let endSlot = null; // Переменная для хранения выбранного конца
+            // Отправляем AJAX-запрос с помощью fetch
+            fetch(`{% url 'get_schedule_record' %}?date=${date}&user_id=${userId}`)
+                .then(response => response.json())
+        .then(data => {
+                const timeSlotsContainer = document.getElementById('time-slots');
+                timeSlotsContainer.innerHTML='';
+                if (data.time_selection) {
+                    console.log(data)
+                    data.available_slots.forEach(slot => {
+                        const div = document.createElement('div');
+                        div.className = 'time-slot ' + (slot.occupied ? 'occupied' : 'available');
+                        div.textContent = slot.slot;
+
+                        // Добавляем обработчик клика только для доступных слотов
+                        if (!slot.occupied) {
+                            div.onclick = () => {
+                                if (!startSlot) {
+                                // Если начало еще не выбрано, выбираем его
+                                startSlot = slot;
+                                div.classList.add('selected');
+<!--                                alert(`Вы выбрали начало: ${slot.slot}`);-->
+                            } else if (!endSlot) {
+                                // Если конец еще не выбран, выбираем его
+                                endSlot = slot;
+                                div.classList.add('selected');
+<!--                                alert(`Вы выбрали конец: ${slot.slot}`);-->
+
+                                // Здесь можно добавить логику для отправки выбранного периода на сервер
+                                alert(`Вы выбрали период: ${startSlot.slot} - ${endSlot.slot}`);
+
+                                // Сбросить выбор
+                                startSlot = null;
+                                endSlot = null;
+                                // Удаляем выделение
+                                document.querySelectorAll('.time-slot').forEach(slotDiv => {
+                                    slotDiv.classList.remove('selected');
+                                });
+                            }
+                            };
+                        }
+
+                        timeSlotsContainer.appendChild(div);
+                    });
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
+        }
+</script>
+{% endblock %}

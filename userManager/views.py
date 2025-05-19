@@ -13,7 +13,7 @@ from .models import Profile
 # Create your views here.
 
 def auth_form_processor(request):
-    creating_form = UserCreationForm()
+    creating_form = UserForm()
     auth_form = AuthenticationForm()
     creating_form_legal = LegalEntity()
     return {
@@ -41,7 +41,7 @@ def request_auth_form_processor(request):
                 if creating_form.is_valid():
                     user = creating_form.save()
                     login(request, user)
-            case 'reg':
+            case 'reg_legal':
                 if creating_form_legal.is_valid():
                     user = creating_form_legal.save()
                     login(request, user)
