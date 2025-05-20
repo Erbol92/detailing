@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
+
 # Create your models here.
 class CustomUser(AbstractUser):
     inn = models.PositiveIntegerField('ИНН', blank=True, null=True, unique=True)
@@ -26,6 +27,7 @@ class ScheduleRecord(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
+    # service = models.ForeignKey('autoService.Service', verbose_name='Услуга', on_delete=models.CASCADE, related_name='services_record')
 
     def __str__(self):
         return f'мастер {self.user}'

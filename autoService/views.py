@@ -1,5 +1,5 @@
+import json
 from datetime import time, datetime, timedelta
-from pprint import pprint
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -98,9 +98,6 @@ def get_schedule_work(request):
     schedule_data = {}
     for master in masters:
         schedules = ScheduleWork.objects.filter(user=master)  # Получаем график работы мастера
-        # print(master, schedules.values('date'))
-        # print(master)
-        # pprint(get_free_time_for_next_30_days(master))
         schedule_data[master.id] = {
             'name': master.username,
             'schedules': [
@@ -108,9 +105,9 @@ def get_schedule_work(request):
                     'date': schedule.date,
                 }
                 for schedule in schedules
-            ]
+            ],
+            'service_id': service_id,
         }
-    # pprint(schedule_data)
     return JsonResponse(schedule_data)
 
 
@@ -122,21 +119,14 @@ def get_schedule_record(request):
         records = ScheduleRecord.objects.filter(user_id=user_id, date=date)  # Получаем услугу по ID
     except Service.DoesNotExist:
         return JsonResponse({'error': 'Услуга не найдена'}, status=404)
-    if not records.exists():
-        # Если записей нет, возвращаем возможность выбрать время
-        return JsonResponse({
-            'message': 'Записей нет. Выберите время.',
-            'time_selection': True,
-            'available_slots': get_available_time_slots()
-        })
-
-        # Если записи есть, показываем доступные промежутки
-    # available_slots = get_available_time_slots(records)
-    pprint(get_available_time_slots(records))
+    # if not records.exists():
+    # Если записей нет, возвращаем возможность выбрать время
     return JsonResponse({
-        'message': 'Доступные промежутки:',
+        'message': 'Записей нет. Выберите время.' if not records.exists() else 'Доступные промежутки:',
         'time_selection': True,
-        'available_slots': get_available_time_slots(records)
+        'available_slots': get_available_time_slots() if not records.exists() else get_available_time_slots(records),
+        'user_id': user_id,
+        'date_str': date_str,
     })
 
 
@@ -164,5 +154,27 @@ def get_available_time_slots(records=None):
                     'slot': f"{start_time.strftime('%H:%M')} - {end_time.strftime('%H:%M')}",
                     'occupied': False
                 })
-    # pprint(time_slots)
     return time_slots
+
+
+def add_record_time(request):
+
+    try:
+        # Получаем данные из запроса
+        data = json.loads(request.body)
+        start_time = data.get('startTime')
+        end_time = data.get('endTime')
+        start_time = datetime.strptime(start_time, "%H:%M").time()
+        end_time = datetime.strptime(end_time, "%H:%M").time()
+        date = data.get('date')
+        date = datetime.strptime(date, "%d.%m.%Y")
+        service_id = data.get('serviceId')
+        user_id = data.get('userId')
+        print(start_time, end_time, date, service_id, user_id)
+
+        # Здесь добавьте логику для сохранения данных в базу данных
+
+        return JsonResponse({'message': 'Запись успешно добавлена!'}, status=201)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+

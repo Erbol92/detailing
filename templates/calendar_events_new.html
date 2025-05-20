@@ -116,7 +116,7 @@
                                 eventElement.className = 'event';
                                 buttonElement.innerText = `${user.name}`;
                                 buttonElement.onclick = function() {
-                                    getScheduleRecord(scheduleDate.toLocaleDateString(), userId);
+                                    getScheduleRecord(scheduleDate.toLocaleDateString(), userId, user.service_id);
                                 };
                                 eventElement.innerText = `${scheduleDate.toLocaleDateString()}`;
                                 dayElement.appendChild(buttonElement);
@@ -130,8 +130,7 @@
                 });
             }
 
-        function getScheduleRecord(date, userId) {
-            console.log(date,userId);
+        function getScheduleRecord(date, userId, serviceId) {
             let startSlot = null; // Переменная для хранения выбранного начала
         let endSlot = null; // Переменная для хранения выбранного конца
             // Отправляем AJAX-запрос с помощью fetch
@@ -162,15 +161,20 @@
 <!--                                alert(`Вы выбрали конец: ${slot.slot}`);-->
 
                                 // Здесь можно добавить логику для отправки выбранного периода на сервер
-                                alert(`Вы выбрали период: ${startSlot.slot} - ${endSlot.slot}`);
 
+                                const startTime = startSlot.slot.split(" - ")[0];
+                                const endTime = endSlot.slot.split(" - ")[1];
+                                const userConfirmed = confirm(`Вы выбрали период: ${startTime} - ${endTime} ${data.date_str} ${serviceId}` );
+                                if (userConfirmed) {
+                                    addService(startTime,endTime,data.date_str,serviceId,userId)
+                                } else {
                                 // Сбросить выбор
                                 startSlot = null;
                                 endSlot = null;
                                 // Удаляем выделение
                                 document.querySelectorAll('.time-slot').forEach(slotDiv => {
                                     slotDiv.classList.remove('selected');
-                                });
+                                });}
                             }
                             };
                         }
@@ -185,5 +189,57 @@
                 console.error('Ошибка:', error);
             });
         }
+</script>
+<script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Проверяем, начинается ли cookie с нужного имени
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+    function addService(startTime, endTime, date_str, serviceId,userId) {
+    // Создаем объект с данными для отправки
+    const data = {
+        startTime: startTime,
+        endTime: endTime,
+        date: date_str,
+        serviceId: serviceId,
+        userId: userId
+    };
+    const csrfToken = getCookie('csrftoken'); // Получаем CSRF-токен
+
+    fetch(`{% url 'add_record_time' %}`, {
+        method: 'POST', // Указываем метод POST
+        headers: {
+            'Content-Type': 'application/json', // Указываем тип контента
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(data) // Преобразуем объект в JSON
+    })
+    .then(response => {
+        // Проверка, успешен ли ответ
+        if (!response.ok) {
+            throw new Error('Сеть ответила с ошибкой: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Обработка полученных данных
+        console.log('Полученные данные:', data);
+        // Здесь вы можете добавить логику для работы с данными
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+    });
+}
 </script>
 {% endblock %}

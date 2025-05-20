@@ -2,6 +2,7 @@
 from django.db import models
 from userManager.models import CustomUser
 
+
 # Create your models here.
 
 
@@ -36,7 +37,8 @@ class Auto(models.Model):
     color = models.CharField(max_length=50, verbose_name='Цвет')
     vin = models.CharField(max_length=17, unique=True, verbose_name='VIN номер')
     auto_number = models.CharField(max_length=50, verbose_name='№ автомобиля', unique=True)
-    user = models.ForeignKey(CustomUser, verbose_name='владелец', on_delete=models.CASCADE, related_name='autos', null=True,
+    user = models.ForeignKey(CustomUser, verbose_name='владелец', on_delete=models.CASCADE, related_name='autos',
+                             null=True,
                              blank=True)
 
     class Meta:
@@ -62,7 +64,7 @@ class Service(models.Model):
     title = models.CharField('название услуги', max_length=100)
     description = models.TextField('описание')
     group = models.ForeignKey(GroupService, verbose_name='группа', on_delete=models.CASCADE)
-    user = models.ManyToManyField(CustomUser,verbose_name='Мастера', related_name='services')
+    user = models.ManyToManyField(CustomUser, verbose_name='Мастера', related_name='services')
 
     class Meta:
         verbose_name = 'Услуга'
@@ -88,5 +90,3 @@ class PriceService(models.Model):
 
     def __str__(self):
         return f'{self.service} {self.price}'
-
-
