@@ -29,3 +29,5 @@ class LegalEntity(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'inn', 'email', 'password1', 'password2']
+
+

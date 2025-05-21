@@ -3,7 +3,8 @@ from datetime import time, datetime, timedelta
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from userManager.models import ScheduleWork, ScheduleRecord
+from userManager.models import ScheduleWork, ScheduleRecord, CustomUser
+from .forms import ClientListForm
 
 from .models import Service
 
@@ -30,6 +31,7 @@ def calendar_events(request):
     services = Service.objects.all()
     context = {
         'services': services,
+        'form': ClientListForm(),
     }
     return render(request, 'calendar_events_new.html', context)
 
@@ -158,7 +160,6 @@ def get_available_time_slots(records=None):
 
 
 def add_record_time(request):
-
     try:
         # Получаем данные из запроса
         data = json.loads(request.body)
@@ -170,11 +171,20 @@ def add_record_time(request):
         date = datetime.strptime(date, "%d.%m.%Y")
         service_id = data.get('serviceId')
         user_id = data.get('userId')
-        print(start_time, end_time, date, service_id, user_id)
+        client_id = data.get('clientId')
+        master = CustomUser.objects.get(id=user_id)
+        client = CustomUser.objects.get(id=client_id)
+        service = Service.objects.get(id=service_id)
+        record, created = ScheduleRecord.objects.get_or_create(
+            user=master,
+            start_time=start_time,
+            end_time=end_time,
+            service=service,
+            date=date,
+            client=client
+        )
 
-        # Здесь добавьте логику для сохранения данных в базу данных
-
-        return JsonResponse({'message': 'Запись успешно добавлена!'}, status=201)
+        if created:
+            return JsonResponse({'message': 'Запись успешно добавлена!'}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
-

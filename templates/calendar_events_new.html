@@ -57,6 +57,10 @@
     </div>
     {% endfor %}
 </div>
+<form id="clientForm">
+    {{ form.as_p }}
+    <button type="button" id="confirmButton">Подтвердить</button>
+</form>
 <div id="calendar" class="calendar"></div>
 <h1>Выберите время</h1>
 <div id="time-slots" class="d-flex f-wrap"></div>
@@ -140,6 +144,12 @@
                 const timeSlotsContainer = document.getElementById('time-slots');
                 timeSlotsContainer.innerHTML='';
                 if (data.time_selection) {
+                    const clientSelect = document.querySelector('#clientForm select[name="client"]');
+                    const clientId = clientSelect.value; // Получаем выбранного мастера
+                     if (!clientId) {
+                    alert('Пожалуйста, выберите мастера.');
+                    return; // Прерываем выполнение, если мастер не выбран
+                    }
                     console.log(data)
                     data.available_slots.forEach(slot => {
                         const div = document.createElement('div');
@@ -164,9 +174,11 @@
 
                                 const startTime = startSlot.slot.split(" - ")[0];
                                 const endTime = endSlot.slot.split(" - ")[1];
-                                const userConfirmed = confirm(`Вы выбрали период: ${startTime} - ${endTime} ${data.date_str} ${serviceId}` );
+
+                                const userConfirmed = confirm(`Вы выбрали период: ${startTime} - ${endTime} ${data.date_str}` );
                                 if (userConfirmed) {
-                                    addService(startTime,endTime,data.date_str,serviceId,userId)
+
+                                    addService(startTime,endTime,data.date_str,serviceId,userId, clientId)
                                 } else {
                                 // Сбросить выбор
                                 startSlot = null;
@@ -206,14 +218,15 @@
     }
     return cookieValue;
 }
-    function addService(startTime, endTime, date_str, serviceId,userId) {
+    function addService(startTime, endTime, date_str, serviceId, userId, clientId) {
     // Создаем объект с данными для отправки
     const data = {
         startTime: startTime,
         endTime: endTime,
         date: date_str,
         serviceId: serviceId,
-        userId: userId
+        userId: userId,
+        clientId: clientId
     };
     const csrfToken = getCookie('csrftoken'); // Получаем CSRF-токен
 
@@ -235,7 +248,9 @@
     .then(data => {
         // Обработка полученных данных
         console.log('Полученные данные:', data);
+        alert(`${data.message}`);
         // Здесь вы можете добавить логику для работы с данными
+        location.reload();
     })
     .catch(error => {
         console.error('Ошибка:', error);

@@ -24,10 +24,11 @@ class Profile(models.Model):
 
 class ScheduleRecord(models.Model):
     user = models.ForeignKey(CustomUser, verbose_name='Мастер', on_delete=models.CASCADE, related_name='records')
+    client = models.ForeignKey('CustomUser', verbose_name='Клиент', on_delete=models.CASCADE, related_name='client_records')
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    # service = models.ForeignKey('autoService.Service', verbose_name='Услуга', on_delete=models.CASCADE, related_name='services_record')
+    service = models.ForeignKey('autoService.Service', verbose_name='Услуга', on_delete=models.CASCADE, related_name='services_record')
 
     def __str__(self):
         return f'мастер {self.user}'
