@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .col {
+        width: calc(100%/6);
+    }
+    .row .col {
+        border: solid 1px;
+        text-align:center;
+    }
+</style>
+<h2>Электронный журнал учета заявок клиентов</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="tile__btn" >записать</button>
+    <button type="reset" class="tile__btn" >очистить</button>
+</form>
+
+<div class="row d-flex" style="color:#ffffff;background-color: cadetblue">
+    <div class="col">ФИО</div>
+    <div class="col">почта</div>
+    <div class="col">тел</div>
+    <div class="col">тематика</div>
+    <div class="col">дата/время</div>
+    <div class="col">откуда</div>
+    <div class="col">просмотр</div>
+</div>
+{% for object in page_obj %}
+<div class="row d-flex">
+    <div class="col">{{ object.client|default:object.full_name }}</div>
+    <div class="col">{{object.email}}</div>
+    <div class="col">{{object.phone}}</div>
+    <div class="col">{{object.topic}}</div>
+    <div class="col">{{object.created_at}}</div>
+    <div class="col">{{object.get_source_display}}</div>
+    <div class="col"><a href="{{object.get_absolute_url}}"  class="tile__btn">детальнее</a></div>
+</div>
+{% endfor %}
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}">назад</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">далее</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
+
+|truncatewords:10

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import CustomUser
+from .models import CustomUser, ScheduleWork
 from .models import Profile
 
 
@@ -31,3 +31,9 @@ class LegalEntity(UserCreationForm):
         fields = ['username', 'inn', 'email', 'password1', 'password2']
 
 
+class ScheduleWorkForm(forms.ModelForm):
+    dates = forms.CharField(label='даты')
+
+    class Meta:
+        model = ScheduleWork
+        fields = ['user', 'dates']

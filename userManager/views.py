@@ -93,3 +93,4 @@ def profile(request):
         'auto_form': auto_form,
     }
     return render(request, 'profile.html', context)
+

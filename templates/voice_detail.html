@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .col {
+        width: calc(100%/6);
+    }
+    .row .col {
+        border: solid 1px;
+        text-align:center;
+    }
+</style>
+
+<div class="row d-flex" style="color:#ffffff;background-color: cadetblue">
+    <div class="col">ФИО</div>
+    <div class="col">почта</div>
+    <div class="col">тел</div>
+    <div class="col">тематика</div>
+    <div class="col">дата/время</div>
+    <div class="col">откуда</div>
+</div>
+<div class="row d-flex">
+    <div class="col">{{ object.client|default:object.full_name }}</div>
+    <div class="col">{{object.email}}</div>
+    <div class="col">{{object.phone}}</div>
+    <div class="col">{{object.topic}}</div>
+    <div class="col">{{object.created_at}}</div>
+    <div class="col">{{object.get_source_display}}</div>
+</div>
+
+<form action="{% url 'create_update_voice' voice_id=object.id %}" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="tile__btn" >назначить</button>
+    <button type="reset" class="tile__btn" >очистить</button>
+</form>
+{% if voice_assignments %}
+<div class="row d-flex" style="color:#ffffff;">
+    <div class="col" style="background-color: cadetblue">сотрудник</div>
+    <div class="col" style="background-color: cadetblue">дата назначения</div>
+    <div class="col" style="background-color: cadetblue">доп. инфо</div>
+</div>
+    {% for voice_assignment in voice_assignments %}
+        <div class="row d-flex">
+            <div class="col">{{voice_assignment.employee}}</div>
+            <div class="col">{{voice_assignment.assigned_at}}</div>
+            <div class="col">{{voice_assignment.additional_info}}</div>
+        </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

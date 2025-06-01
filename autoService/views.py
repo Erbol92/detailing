@@ -96,10 +96,10 @@ def get_schedule_work(request):
         return JsonResponse({'error': 'Услуга не найдена'}, status=404)
 
     masters = service.user.all()  # Получаем всех мастеров, предоставляющих эту услугу
-
+    today = datetime.now().date()
     schedule_data = {}
     for master in masters:
-        schedules = ScheduleWork.objects.filter(user=master)  # Получаем график работы мастера
+        schedules = ScheduleWork.objects.filter(user=master,date__gte=today)  # Получаем график работы мастера
         schedule_data[master.id] = {
             'name': master.username,
             'schedules': [
@@ -188,3 +188,4 @@ def add_record_time(request):
             return JsonResponse({'message': 'Запись успешно добавлена!'}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+

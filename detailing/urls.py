@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('userManager.urls')),
     path('', include('autoService.urls')),
+    path('', include('voiceService.urls')),
 ]

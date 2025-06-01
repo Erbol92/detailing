@@ -59,10 +59,9 @@
 </div>
 <form id="clientForm">
     {{ form.as_p }}
-    <button type="button" id="confirmButton">Подтвердить</button>
 </form>
 <div id="calendar" class="calendar"></div>
-<h1>Выберите время</h1>
+
 <div id="time-slots" class="d-flex f-wrap"></div>
 
 <script>
@@ -87,7 +86,7 @@
     function renderCalendar(data) {
                 const calendarElement = document.getElementById('calendar');
                 calendarElement.innerHTML = ''; // Очистить календарь перед отображением
-
+                calendarElement.innerHTML = '<h1>Выберите время</h1>';
                 // Создаем массив для уникальных дней из расписания
                 const uniqueDays = new Set();
 
@@ -147,7 +146,7 @@
                     const clientSelect = document.querySelector('#clientForm select[name="client"]');
                     const clientId = clientSelect.value; // Получаем выбранного мастера
                      if (!clientId) {
-                    alert('Пожалуйста, выберите мастера.');
+                    alert('Пожалуйста, выберите клиента.');
                     return; // Прерываем выполнение, если мастер не выбран
                     }
                     console.log(data)
