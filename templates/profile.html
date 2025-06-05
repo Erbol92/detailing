@@ -3,6 +3,18 @@
 {% endblock %}
 {% block main %}
 <h1>ПРОФИЛЬ</h1>
+{% if my_records %}
+<h2>Ваши записи</h2>
+<div class="d-flex auto_profile">
+{% for record in my_records %}
+<div style="line-height: 5px; padding: 10px;">
+    <p>Мастер: {{ record.user }}</p>
+    <p>Услуга: {{ record.service }}</p>
+    <p>Время: {{ record.date }} {{ record.start_time }}-{{ record.end_time }}</p>
+</div>
+{% endfor %}
+</div>
+{% endif %}
 <div class="d-flex profile_forms">
     <form action="" method="post">
         {% csrf_token %}

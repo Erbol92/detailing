@@ -4,9 +4,16 @@ from django.contrib import admin
 
 from .models import CustomUser, ScheduleWork, ScheduleRecord, Profile
 from .forms import ScheduleWorkForm
+from django.contrib.auth.admin import UserAdmin
 # Register your models here.
 
-admin.site.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    list_display = ('username', 'email', 'first_name', 'last_name')  # Поля, которые вы хотите отображать
+    search_fields = ('username', 'email')  # Поля для поиска
+    ordering = ('username',)
+
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Profile)
 
 

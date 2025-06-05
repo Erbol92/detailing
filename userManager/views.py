@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-
+from datetime import time, datetime
 from .forms import ProfileForm, UserForm, LegalEntity, ProfileUserForm
-from .models import Profile
+from .models import Profile, ScheduleRecord
 
 
 # Create your views here.
@@ -20,6 +20,7 @@ def auth_form_processor(request):
         'creating_form': creating_form,
         'auth_form': auth_form,
         'creating_form_legal': creating_form_legal,
+        'roles':list(request.user.groups.all().values_list('name', flat=True)) if request.user.is_authenticated else []
     }
 
 
@@ -73,7 +74,8 @@ def profile(request):
         user=request.user) else None, prefix='profile_form')
     user_form = ProfileUserForm(request.POST or None, instance=request.user, prefix='user_form')
     auto_form = AutoForm(request.POST or None, prefix='auto_form')
-    print(request.POST)
+    today = datetime.now().date()
+    my_records = ScheduleRecord.objects.filter(client=request.user,date__gte=today).order_by('date','start_time')
     if 'action_user' in request.POST:
         if profile_form.is_valid():
             obj = profile_form.save(commit=False)
@@ -91,6 +93,7 @@ def profile(request):
         'profile_form': profile_form,
         'user_form': user_form,
         'auto_form': auto_form,
+        'my_records': my_records,
     }
     return render(request, 'profile.html', context)
 

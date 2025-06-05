@@ -14,7 +14,7 @@ class VoicenForm(forms.ModelForm):
 
     class Meta:
         model = Voice
-        fields = '__all__'
+        exclude = ['status']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -27,9 +27,9 @@ class VoicenForm(forms.ModelForm):
 
 class VoiceAssignmentForm(forms.ModelForm):
     employee = forms.ModelChoiceField(
-        label='мастер',
+        label='сотрудник',
         queryset=CustomUser.objects.filter(is_staff=True),  # Исключаем мастеров с is_staff=True
-        empty_label="Выберите мастера",  # Текст для пустого значения
+        empty_label="Выберите сотрудника",  # Текст для пустого значения
         required=True  # Укажите, что поле обязательно для заполнения
     )
     class Meta:

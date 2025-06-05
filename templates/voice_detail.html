@@ -11,7 +11,7 @@
     }
 </style>
 
-<div class="row d-flex" style="color:#ffffff;background-color: cadetblue">
+<div class="row d-flex" style="color:#ffffff;background-color: cadetblue;margin-top: 20px;">
     <div class="col">ФИО</div>
     <div class="col">почта</div>
     <div class="col">тел</div>
@@ -27,13 +27,25 @@
     <div class="col">{{object.created_at}}</div>
     <div class="col">{{object.get_source_display}}</div>
 </div>
-
-<form action="{% url 'create_update_voice' voice_id=object.id %}" method="post">
+{% if object.assignments.last.employee == request.user %}
+<div class="d-flex">
+    {% for master in masters %}
+        <div class="text-center" style="padding: 5px;margin: 5px; border: #ffffff solid 1px;">
+            <div title="{{master.user_profile.phone }}">{{master}}</div>
+            услуги мастера:
+            {% for service in master.services.all %}
+                <span class="lowercase">{{service}}</span>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+<form action="{% url 'create_update_voice' voice_id=object.id %}" method="post" style="margin: 20px;">
     {% csrf_token %}
     {{form.as_p}}
     <button type="submit" class="tile__btn" >назначить</button>
     <button type="reset" class="tile__btn" >очистить</button>
 </form>
+{% endif %}
 {% if voice_assignments %}
 <div class="row d-flex" style="color:#ffffff;">
     <div class="col" style="background-color: cadetblue">сотрудник</div>

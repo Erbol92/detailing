@@ -85,6 +85,8 @@
 
     function renderCalendar(data) {
                 const calendarElement = document.getElementById('calendar');
+                const timeSlots = document.getElementById('time-slots');
+                timeSlots.innerHTML = '';
                 calendarElement.innerHTML = ''; // Очистить календарь перед отображением
                 calendarElement.innerHTML = '<h1>Выберите время</h1>';
                 // Создаем массив для уникальных дней из расписания

@@ -37,14 +37,23 @@
                     <li><a href="{% url 'service' %}">Услуги</a></li>
                     <li><a href="http://">О нас</a></li>
                     <li><a href="http://">Наши работы</a></li>
-                    <li><a href="{% url 'voice_register' %}">регистрация обращений</a></li>
+                    {% if "Менеджер" in roles or "Мастер" in roles or request.user.is_superuser %}
+                    <li><a href="{% url 'voice_register' %}">обращения</a></li>
                     <li><a href="{% url 'calendar_events' %}">записи</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </header>
     </div>
 
     <div class="content">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <form action="{% url 'request_auth_form_processor' %}" class="auth_form" method="POST" id="auth_form" style="display:none;">
             <span class="close" onclick="CloseElement('auth_form')">❌</span>
             {% csrf_token %}

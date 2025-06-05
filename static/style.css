@@ -151,14 +151,14 @@ display:block;
     transform: translate(-50%, -50%); /* Сдвиг на половину ширины и высоты элемента */
 }
 
-button {
+button, .button{
     padding:5px;
     border-radius: 20%;
     min-width: 70px;
     cursor: pointer;
 }
 
-button:hover {
+button:hover, .button:hover{
     transform: scale(1.1);
 }
 
@@ -249,4 +249,8 @@ h1,h2,h3 {
         }
     .card_service:hover {
         transform:scale(1.1);
+    }
+
+    .text-center {
+        text-align: center;
     }

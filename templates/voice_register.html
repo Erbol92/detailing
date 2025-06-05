@@ -9,14 +9,26 @@
         border: solid 1px;
         text-align:center;
     }
+
+    .expired{
+        background-color: rgb(107, 77, 31);
+        padding: 5px;
+    }
+
+    .class_expired {
+        background-color: rgb(107, 77, 31);;
+    }
 </style>
 <h2>Электронный журнал учета заявок клиентов</h2>
+{% if "Менеджер" in roles or request.user.is_superuser %}
+<a href="{% url 'voice_register' %}?expired=True" class="expired button">истекшие</a>
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p}}
     <button type="submit" class="tile__btn" >записать</button>
     <button type="reset" class="tile__btn" >очистить</button>
 </form>
+{% endif %}
 
 <div class="row d-flex" style="color:#ffffff;background-color: cadetblue">
     <div class="col">ФИО</div>
@@ -28,14 +40,20 @@
     <div class="col">просмотр</div>
 </div>
 {% for object in page_obj %}
-<div class="row d-flex">
+<div class="row d-flex {{class_expired}}">
     <div class="col">{{ object.client|default:object.full_name }}</div>
     <div class="col">{{object.email}}</div>
     <div class="col">{{object.phone}}</div>
     <div class="col">{{object.topic}}</div>
     <div class="col">{{object.created_at}}</div>
     <div class="col">{{object.get_source_display}}</div>
-    <div class="col"><a href="{{object.get_absolute_url}}"  class="tile__btn">детальнее</a></div>
+    <div class="col">
+        <a href="{{object.get_absolute_url}}"  class="tile__btn">детальнее</a> 
+        {% if "Менеджер" in roles or request.user.is_superuser %}
+        |
+        <a href="{% url 'closing_voice' object.id %}"  class="tile__btn" onclick="return confirmClose();">закрыть</a>
+        {% endif %}
+    </div>
 </div>
 {% endfor %}
 <div class="pagination">
@@ -55,6 +73,12 @@
         {% endif %}
     </span>
 </div>
+
+<script>
+    function confirmClose() {
+        return confirm(`Вы уверены, что хотите закрыть заявку ?`);
+    }
+</script>
 {% endblock %}
 
 |truncatewords:10
