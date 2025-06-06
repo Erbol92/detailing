@@ -11,7 +11,7 @@ class VoicenForm(forms.ModelForm):
         empty_label="Выберите клиента",  # Текст для пустого значения
         required=False  # Укажите, что поле обязательно для заполнения
     )
-
+    
     class Meta:
         model = Voice
         exclude = ['status']

@@ -147,8 +147,10 @@
                 if (data.time_selection) {
                     const clientSelect = document.querySelector('#clientForm select[name="client"]');
                     const clientId = clientSelect.value; // Получаем выбранного мастера
-                     if (!clientId) {
-                    alert('Пожалуйста, выберите клиента.');
+                    const autoSelect = document.querySelector('#clientForm select[name="car"]');
+                    const autoId = autoSelect.value;
+                     if (!clientId || !autoId) {
+                    alert('Пожалуйста, выберите клиента и авто.');
                     return; // Прерываем выполнение, если мастер не выбран
                     }
                     console.log(data)
@@ -164,12 +166,12 @@
                                 // Если начало еще не выбрано, выбираем его
                                 startSlot = slot;
                                 div.classList.add('selected');
-<!--                                alert(`Вы выбрали начало: ${slot.slot}`);-->
+// <!--                                alert(`Вы выбрали начало: ${slot.slot}`);-->
                             } else if (!endSlot) {
                                 // Если конец еще не выбран, выбираем его
                                 endSlot = slot;
                                 div.classList.add('selected');
-<!--                                alert(`Вы выбрали конец: ${slot.slot}`);-->
+// <!--                                alert(`Вы выбрали конец: ${slot.slot}`);-->
 
                                 // Здесь можно добавить логику для отправки выбранного периода на сервер
 
@@ -178,8 +180,7 @@
 
                                 const userConfirmed = confirm(`Вы выбрали период: ${startTime} - ${endTime} ${data.date_str}` );
                                 if (userConfirmed) {
-
-                                    addService(startTime,endTime,data.date_str,serviceId,userId, clientId)
+                                    addService(startTime,endTime, data.date_str, serviceId, userId, clientId, autoId)
                                 } else {
                                 // Сбросить выбор
                                 startSlot = null;
@@ -219,7 +220,7 @@
     }
     return cookieValue;
 }
-    function addService(startTime, endTime, date_str, serviceId, userId, clientId) {
+    function addService(startTime, endTime, date_str, serviceId, userId, clientId, autoId) {
     // Создаем объект с данными для отправки
     const data = {
         startTime: startTime,
@@ -227,8 +228,10 @@
         date: date_str,
         serviceId: serviceId,
         userId: userId,
-        clientId: clientId
+        clientId: clientId,
+        autoId: autoId,
     };
+    console.log(data)
     const csrfToken = getCookie('csrftoken'); // Получаем CSRF-токен
 
     fetch(`{% url 'add_record_time' %}`, {
@@ -257,5 +260,22 @@
         console.error('Ошибка:', error);
     });
 }
+</script>
+<script>
+    document.getElementById('id_client').addEventListener('change', function() {
+    var clientId = this.value;
+    fetch(`/get_cars/${clientId}/`)
+        .then(response => response.json())
+        .then(data => {
+            var carSelect = document.getElementById('id_car');
+            carSelect.innerHTML = '<option value="" selected="">Выберите авто</option>'; // Очистить существующие опции
+            data.cars.forEach(function(car) {
+                var option = document.createElement('option');
+                option.value = car.id;
+                option.text = car.model__title; // Настройте в зависимости от вашего представления модели
+                carSelect.add(option);
+            });
+        });
+});
 </script>
 {% endblock %}

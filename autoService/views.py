@@ -6,7 +6,7 @@ from django.shortcuts import render
 from userManager.models import ScheduleWork, ScheduleRecord, CustomUser
 from .forms import ClientListForm
 
-from .models import Service
+from .models import Auto, Service
 
 
 # Create your views here.
@@ -172,16 +172,20 @@ def add_record_time(request):
         service_id = data.get('serviceId')
         user_id = data.get('userId')
         client_id = data.get('clientId')
+        auto_id = data.get('autoId')
         master = CustomUser.objects.get(id=user_id)
         client = CustomUser.objects.get(id=client_id)
         service = Service.objects.get(id=service_id)
+        auto = Auto.objects.get(id=auto_id)
+        print(data)
         record, created = ScheduleRecord.objects.get_or_create(
             user=master,
             start_time=start_time,
             end_time=end_time,
             service=service,
             date=date,
-            client=client
+            client=client,
+            auto=auto
         )
 
         if created:
@@ -189,3 +193,8 @@ def add_record_time(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+def get_cars(request, client_id):
+    cars = Auto.objects.filter(user=client_id).values('id', 'model__title')  # Настройте в зависимости от вашей модели
+    print(cars)
+    car_list = list(cars)
+    return JsonResponse({'cars': car_list})

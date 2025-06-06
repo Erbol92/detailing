@@ -8,8 +8,9 @@ admin.site.register(Mark)
 admin.site.register(GroupService)
 
 @admin.register(Auto)
-class ServiceAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Auto._meta.get_fields()]
+class AutoAdmin(admin.ModelAdmin):
+    # list_display = [field.name for field in Auto._meta.get_fields() if field.name != 'auto']
+    list_display = ['mark','model','year','vin','auto_number','user','color']
     # list_editable = ['mark']
     # list_filter = ['category']
     search_fields = ['mark',]

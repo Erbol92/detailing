@@ -29,6 +29,7 @@ class ScheduleRecord(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     service = models.ForeignKey('autoService.Service', verbose_name='Услуга', on_delete=models.CASCADE, related_name='services_record')
+    auto = models.ForeignKey('autoService.Auto', verbose_name='авто', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'мастер {self.user}'

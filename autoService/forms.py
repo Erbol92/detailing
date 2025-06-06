@@ -14,6 +14,12 @@ class ClientListForm(forms.Form):
     client = forms.ModelChoiceField(
         label='клиент',
         queryset=CustomUser.objects.exclude(is_staff=True),  # Исключаем мастеров с is_staff=True
-        empty_label="Выберите клиента",  # Текст для пустого значения
+        # empty_label="Выберите клиента",  # Текст для пустого значения
         required=True  # Укажите, что поле обязательно для заполнения
+    )
+    car = forms.ModelChoiceField(
+        label='автомобиль',
+        queryset=Auto.objects.none(),  # Изначально пустой queryset
+        # empty_label="Выберите авто",
+        required=True
     )
