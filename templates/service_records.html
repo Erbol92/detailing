@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .col {
+        width: calc(100%/6);
+    }
+    .row .col {
+        border: solid 1px;
+        text-align:center;
+    }
+
+    .expired{
+        background-color: rgb(107, 77, 31);
+        padding: 5px;
+    }
+
+    .class_expired {
+        background-color: rgb(107, 77, 31);;
+    }
+    div.d-flex > div {
+        flex: 1;
+        border: solid 1px;
+        text-align:center;
+    }
+</style>
+<h2>График приема клиентов</h2>
+<div class="d-flex row" style="font-size: larger;">
+    <div>дата</div>
+    <div>время</div>
+    <div>клиент</div>
+    <div>авто</div>
+    <div>услуга</div>
+</div>
+{% for record in record_list %}
+    <div class="d-flex">
+        <div>{{record.date}}</div>
+        <div>{{record.start_time}}-{{record.end_time}}</div>
+        <div>{{record.client}}</div>
+        <div>{{record.auto}}</div>
+        <div>{{record.service}}</div>
+    </div>
+{% endfor %}
+{% endblock %}
+
+|truncatewords:10

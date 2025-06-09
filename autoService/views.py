@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from userManager.models import ScheduleWork, ScheduleRecord, CustomUser
 from .forms import ClientListForm
-
+from django.contrib.auth.decorators import login_required
 from .models import Auto, Service
 
 
@@ -177,7 +177,6 @@ def add_record_time(request):
         client = CustomUser.objects.get(id=client_id)
         service = Service.objects.get(id=service_id)
         auto = Auto.objects.get(id=auto_id)
-        print(data)
         record, created = ScheduleRecord.objects.get_or_create(
             user=master,
             start_time=start_time,
@@ -198,3 +197,17 @@ def get_cars(request, client_id):
     print(cars)
     car_list = list(cars)
     return JsonResponse({'cars': car_list})
+
+@login_required
+def service_records(request):
+    today = datetime.now().date()
+    user = request.user
+    if 'Менеджер' in user.groups.all().values_list('name',flat=True):
+        record_list = ScheduleRecord.objects.filter(date=today)
+    else:
+        record_list = ScheduleRecord.objects.filter(user=user, date__gte=today)
+    context = {
+        'record_list': record_list,
+    }
+
+    return render(request, 'service_records.html', context)

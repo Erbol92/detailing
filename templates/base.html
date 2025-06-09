@@ -35,11 +35,12 @@
                 <ul>
                     <li><a href="{% url 'main' %}">Главная</a></li>
                     <li><a href="{% url 'service' %}">Услуги</a></li>
-                    <li><a href="http://">О нас</a></li>
-                    <li><a href="http://">Наши работы</a></li>
+                    <!-- <li><a href="http://">О нас</a></li>
+                    <li><a href="http://">Наши работы</a></li> -->
                     {% if "Менеджер" in roles or "Мастер" in roles or request.user.is_superuser %}
                     <li><a href="{% url 'voice_register' %}">обращения</a></li>
-                    <li><a href="{% url 'calendar_events' %}">записи</a></li>
+                    <li><a href="{% url 'calendar_events' %}">запись на прием</a></li>
+                    <li><a href="{% url 'service_records' %}">график приема</a></li>
                     {% endif %}
                 </ul>
             </div>

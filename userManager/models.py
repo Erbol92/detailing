@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class CustomUser(AbstractUser):
     inn = models.PositiveIntegerField('ИНН', blank=True, null=True, unique=True)
+    email = models.EmailField(unique=True)
 
 
 class Profile(models.Model):
@@ -37,6 +38,7 @@ class ScheduleRecord(models.Model):
     class Meta:
         verbose_name = 'запись'
         verbose_name_plural = 'записи'
+        ordering = ['date','start_time']
 
 class ScheduleWork(models.Model):
     user = models.ForeignKey(CustomUser, verbose_name='Мастер', on_delete=models.CASCADE, related_name='work_times')
