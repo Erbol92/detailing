@@ -11,6 +11,7 @@
     <p>Мастер: {{ record.user }}</p>
     <p>Услуга: {{ record.service }}</p>
     <p>Время: {{ record.date }} {{ record.start_time }}-{{ record.end_time }}</p>
+    <p>Статус: {{ record.get_status_display }}</p>
 </div>
 {% endfor %}
 </div>

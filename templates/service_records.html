@@ -37,7 +37,7 @@
     <div class="d-flex">
         <div>{{record.date}}</div>
         <div>{{record.start_time}}-{{record.end_time}}</div>
-        <div>{{record.client}}</div>
+        <div title="">{{record.client}} <br> тел. {{ record.client.user_profile.phone|default:"отсутствует в профиле" }}</div>
         <div>{{record.auto}}</div>
         <div>{{record.service}} <br>{{record.price}} руб. </div>
         <div class="" style="position: relative;">
