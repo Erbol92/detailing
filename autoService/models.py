@@ -21,7 +21,12 @@ class ModelAuto(models.Model):
     title = models.CharField('название модели', unique=True)
     model_auto = models.ForeignKey(Mark, verbose_name='модель', on_delete=models.CASCADE,
                                    related_name='models_auto')
-
+    BODY_CHOICES = [
+        ('light', 'легкий'),
+        ('medium', 'средний'),
+        ('heavy', 'тяжелый'),
+    ]
+    body_type= models.CharField(max_length=20, choices=BODY_CHOICES, default='light', verbose_name='тип кузова')
     def __str__(self):
         return f'{self.model_auto} {self.title}'
 

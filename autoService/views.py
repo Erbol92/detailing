@@ -2,12 +2,13 @@ import json
 from datetime import time, datetime, timedelta
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from userManager.models import ScheduleWork, ScheduleRecord, CustomUser
 from .forms import ClientListForm
 from django.contrib.auth.decorators import login_required
-from .models import Auto, Service
-
+from .models import Auto, Service, PriceService
+from django.views import View
+from django.db.models import OuterRef, Subquery
 
 # Create your views here.
 
@@ -202,12 +203,23 @@ def get_cars(request, client_id):
 def service_records(request):
     today = datetime.now().date()
     user = request.user
+    price_subquery = PriceService.objects.filter(service=OuterRef('service')).values('price')[:1]
     if 'Менеджер' in user.groups.all().values_list('name',flat=True):
-        record_list = ScheduleRecord.objects.filter(date=today)
+        record_list = ScheduleRecord.objects.filter(date__gte=today).exclude(status='closed')
     else:
-        record_list = ScheduleRecord.objects.filter(user=user, date__gte=today)
+        record_list = ScheduleRecord.objects.filter(user=user, date__gte=today).exclude(status='closed')
+    record_list=record_list.annotate(price=Subquery(price_subquery))
     context = {
         'record_list': record_list,
     }
 
     return render(request, 'service_records.html', context)
+
+
+
+class ChangeStatusView(View):
+    def post(self, request, record_id, new_status):
+        record = get_object_or_404(ScheduleRecord, id=record_id)
+        record.status = new_status
+        record.save()
+        return redirect('service_records')

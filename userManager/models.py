@@ -31,7 +31,14 @@ class ScheduleRecord(models.Model):
     end_time = models.TimeField()
     service = models.ForeignKey('autoService.Service', verbose_name='Услуга', on_delete=models.CASCADE, related_name='services_record')
     auto = models.ForeignKey('autoService.Auto', verbose_name='авто', on_delete=models.CASCADE)
-
+    STATUS_CHOICES = [
+        ('scheduled', 'Запланировано'),
+        ('in_progress', 'Принято в работу'),
+        ('ready_for_pickup', 'Можно забирать'),
+        ('closed', 'Закрыт'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled', verbose_name='Состояние')
+    
     def __str__(self):
         return f'мастер {self.user}'
 

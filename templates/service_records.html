@@ -31,6 +31,7 @@
     <div>клиент</div>
     <div>авто</div>
     <div>услуга</div>
+    <div>статус</div>
 </div>
 {% for record in record_list %}
     <div class="d-flex">
@@ -38,7 +39,33 @@
         <div>{{record.start_time}}-{{record.end_time}}</div>
         <div>{{record.client}}</div>
         <div>{{record.auto}}</div>
-        <div>{{record.service}}</div>
+        <div>{{record.service}} <br>{{record.price}} руб. </div>
+        <div class="" style="position: relative;">
+            <div>{{record.get_status_display}}</div>
+            <button onclick="document.getElementById('status_{{ record.id }}').style.display='grid'">сменить статус</button>
+            <div id="status_{{record.id}}" style="position: absolute;transform: translate(50%, 0);
+    z-index: 10000; display: none;grid-template-columns: 1fr;background-color: bisque;">
+                <form action="{% url 'change_status' record.id 'scheduled' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Запланировано</button>
+                </form>
+                
+                <form action="{% url 'change_status' record.id 'in_progress' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Принято в работу</button>
+                </form>
+                
+                <form action="{% url 'change_status' record.id 'ready_for_pickup' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Можно забирать</button>
+                </form>
+                
+                <form action="{% url 'change_status' record.id 'closed' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Закрыт</button>
+                </form>
+            </div>
+        </div>
     </div>
 {% endfor %}
 {% endblock %}
