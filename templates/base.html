@@ -12,8 +12,8 @@
         <div class="log_auth">
             <div>
                 {% if user.is_authenticated %}
-                <a href="{% url 'user_logout' %}">{{request.user}}, выйти</a>
-                <label for="menu_checkbox" style="color:white; text-align:start;">»</label>
+                <a style="padding: 5px;" href="{% url 'user_logout' %}">{{request.user}}, выйти</a>|
+                <label class="button" for="menu_checkbox" style="color:white; text-align:start; padding: 5px;">»</label>
                 <input type="checkbox" id="menu_checkbox" style="display: none;">
                 <div id="menu_profile">
                     <a href="{% url 'profile' %}">профиль</a>
@@ -37,6 +37,9 @@
                     <li><a href="{% url 'service' %}">Услуги</a></li>
                     <!-- <li><a href="http://">О нас</a></li>
                     <li><a href="http://">Наши работы</a></li> -->
+                    {% if not user.is_authenticated or not roles and not request.user.is_superuser %}
+                    <li><a href="{% url 'voice_from_user' %}">обращения</a></li>
+                    {% endif %}
                     {% if "Менеджер" in roles or "Мастер" in roles or request.user.is_superuser %}
                     <li><a href="{% url 'voice_register' %}">обращения</a></li>
                     <li><a href="{% url 'calendar_events' %}">запись на прием</a></li>

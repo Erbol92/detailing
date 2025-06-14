@@ -13,4 +13,5 @@ urlpatterns = [
     # 
     path('service_records/', service_records, name='service_records'),
     path('change-status/<int:record_id>/<str:new_status>/', ChangeStatusView.as_view(), name='change_status'),
+    
 ]

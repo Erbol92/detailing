@@ -27,7 +27,9 @@
     <div class="col">{{object.created_at}}</div>
     <div class="col">{{object.get_source_display}}</div>
 </div>
-{% if object.assignments.last.employee == request.user %}
+<div>{{object.text}}</div>
+{% if object.assignments.last.employee == request.user or 'Менеджер' in roles or request.user.is_superuser %}
+<h2>список мастеров и их услуг</h2>
 <div class="d-flex">
     {% for master in masters %}
         <div class="text-center" style="padding: 5px;margin: 5px; border: #ffffff solid 1px;">
@@ -54,7 +56,7 @@
 </div>
     {% for voice_assignment in voice_assignments %}
         <div class="row d-flex">
-            <div class="col">{{voice_assignment.employee}}</div>
+            <div class="col">{{voice_assignment.employee|default:'ждет назначения'}}</div>
             <div class="col">{{voice_assignment.assigned_at}}</div>
             <div class="col">{{voice_assignment.additional_info}}</div>
         </div>

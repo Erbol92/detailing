@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from django.db.models import OuterRef, Subquery, Max
-from .forms import VoicenForm, VoiceAssignmentForm
+from .forms import VoicenForm, VoiceAssignmentForm, VoiceUserForm
 from .models import Voice, VoiceAssignment
 from django.contrib import messages
 from django.utils import timezone
@@ -18,17 +18,21 @@ def voice_register(request):
         voices = Voice.objects.filter(status=False,created_at__lt=date_threshold).order_by('-created_at')
         class_expired='class_expired'
     else:
-        # Подзапрос для получения последнего назначения для каждой заявки
-        last_assignment_subquery = VoiceAssignment.objects.filter(
-            voice=OuterRef('pk')
-        ).order_by('-assigned_at')
+        print(CustomUser.objects.filter(groups__name='Менеджер', username=request.user),request.user.is_superuser)
+        if CustomUser.objects.filter(groups__name='Менеджер', username=request.user) or request.user.is_superuser:
+            voices = Voice.objects.filter(status=False).order_by('-created_at')
+        else:
+            # Подзапрос для получения последнего назначения для каждой заявки
+            last_assignment_subquery = VoiceAssignment.objects.filter(
+                voice=OuterRef('pk')
+            ).order_by('-assigned_at')
 
-        # Получаем все заявки, где последний назначенный сотрудник - текущий пользователь
-        voices = Voice.objects.filter(
-            status=False,
-            assignments__in=Subquery(last_assignment_subquery.values('id')[:1]),
-            assignments__employee=request.user
-        ).order_by('-created_at').distinct()
+            # Получаем все заявки, где последний назначенный сотрудник - текущий пользователь
+            voices = Voice.objects.filter(
+                status=False,
+                assignments__in=Subquery(last_assignment_subquery.values('id')[:1]),
+                assignments__employee=request.user
+            ).order_by('-created_at').distinct()
     paginator = Paginator(voices, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -76,3 +80,28 @@ def closing_voice(request, voice_id: int):
     messages.success(request, 'обращение зарыто')
     return redirect('voice_register')
     
+def voice_from_user(request):
+    
+    if request.user.is_authenticated:
+        voices = Voice.objects.filter(client=request.user).order_by('-created_at')
+        paginator = Paginator(voices, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+    else:
+        voices = None
+        page_obj = None
+
+    form = VoiceUserForm(data = request.POST or None,user=request.user)
+    if form.is_valid():
+        voice = form.save(commit=False)
+        if request.user.is_authenticated:
+            voice.client=request.user
+        voice.source = 'site'
+        voice.save()
+        VoiceAssignment.objects.create(voice=voice)
+        return redirect('voice_from_user')
+    context = {
+        'form': form,
+        'page_obj': page_obj,
+    }
+    return render(request, 'user_voice_register.html', context)

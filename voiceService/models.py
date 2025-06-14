@@ -30,13 +30,15 @@ class Voice(models.Model):
         ('vk', 'ВК'),
         ('tg', 'телеграм'),
         ('whatsapp', 'WhatsApp'),
+        ('site', 'сайт'),
     ], verbose_name='откуда заявка')
     status = models.BooleanField('Статус', default=False)
+    text = models.TextField('текст обращения',null=True)
 
-    def clean(self):
-        # Убедитесь, что либо client, либо full_name заполнены
-        if not self.client and not self.full_name:
-            raise ValidationError('Укажите либо клиента, либо ФИО.')
+    # def clean(self):
+    #     # Убедитесь, что либо client, либо full_name заполнены
+    #     if not self.client and not self.full_name:
+    #         raise ValidationError('Укажите либо клиента, либо ФИО.')
 
     def get_absolute_url(self):
         return reverse('voice_detail', kwargs={'pk': self.pk})

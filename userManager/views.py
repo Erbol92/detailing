@@ -8,6 +8,8 @@ from django.shortcuts import render, redirect
 from datetime import time, datetime
 from .forms import ProfileForm, UserForm, LegalEntity, ProfileUserForm
 from .models import Profile, ScheduleRecord
+from autoService.models import PriceService
+from django.db.models import OuterRef, Subquery
 
 
 # Create your views here.
@@ -75,7 +77,8 @@ def profile(request):
     user_form = ProfileUserForm(request.POST or None, instance=request.user, prefix='user_form')
     auto_form = AutoForm(request.POST or None, prefix='auto_form')
     today = datetime.now().date()
-    my_records = ScheduleRecord.objects.filter(client=request.user,date__gte=today).order_by('date','start_time')
+    price_subquery = PriceService.objects.filter(service=OuterRef('service')).values('price')[:1]
+    my_records = ScheduleRecord.objects.filter(client=request.user,date__gte=today).order_by('date','start_time').annotate(price=Subquery(price_subquery))
     if 'action_user' in request.POST:
         if profile_form.is_valid():
             obj = profile_form.save(commit=False)
