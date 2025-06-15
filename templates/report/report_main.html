@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<ul>
+    <li><a href="{% url 'user_voice_report' %}"><pre>1) Обращения клиентов</pre></a></li>
+    <li>
+        <a href="{% url 'generate_inquiries_report' %}">
+            <pre>2)	Отчет об обращениях– файл, включающий в себя:
+                - поступивших устных обращений (всего, из них переадресовано);
+                - поступивших письменных обращений WhatsApp, Instagram, сайта от клиентов (всего, из них переадресовано, в том числе: рассмотренные без нарушения сроков; рассмотренные с нарушением сроков обращения);
+            </pre>
+        </a></li>
+    <li><a href="{% url 'profit_report' %}"><pre>3) Отчет о прибыли</pre></a></li>
+    <li><a href="{% url 'master_service_report' %}"><pre>4) Отчет о выполненных заявках </pre></a></li>
+</ul>
+{% endblock %}
+user_voice_report

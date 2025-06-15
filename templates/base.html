@@ -45,6 +45,9 @@
                     <li><a href="{% url 'calendar_events' %}">запись на прием</a></li>
                     <li><a href="{% url 'service_records' %}">график приема</a></li>
                     {% endif %}
+                    {% if "Менеджер" in roles or "Менеджер" in roles or request.user.is_superuser %}
+                    <li><a href="{% url 'report_main' %}">отчеты</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </header>

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'userManager',
     'autoService',
     'voiceService',
+    'report',
 ]
 
 MIDDLEWARE = [

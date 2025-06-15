@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('userManager.urls')),
     path('', include('autoService.urls')),
     path('', include('voiceService.urls')),
+    path('report/', include('report.urls')),
 ]
