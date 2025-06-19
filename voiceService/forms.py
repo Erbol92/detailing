@@ -2,6 +2,7 @@ from django import forms
 from userManager.models import CustomUser
 
 from .models import Voice, VoiceAssignment
+from userManager.models import Profile
 
 
 class VoicenForm(forms.ModelForm):
@@ -57,8 +58,9 @@ class VoiceUserForm(forms.ModelForm):
         if user and user.is_authenticated:
             # Если пользователь авторизован, оставляем поля client, full_name и status
             self.fields.pop('full_name', None)
-            self.fields['phone'].initial = user.user_profile.phone
-            self.fields['email'].initial = user.email
+            if Profile.objects.filter(user=user):
+                self.fields['phone'].initial = user.user_profile.phone
+                self.fields['email'].initial = user.email
         else:
             # Если пользователь не авторизован, удаляем поля client и status
             self.fields['phone'].required = True

@@ -131,3 +131,12 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'userManager.CustomUser'
+
+LANGUAGES = [
+    ('ru', 'Russian'),
+    # другие языки
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]

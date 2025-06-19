@@ -202,3 +202,59 @@ def master_service_report(request):
         df.to_excel(writer, index=False)
 
     return response
+
+from django.utils import translation
+translation.activate('ru')
+def generate_inquiries_report(request):
+    current_year = datetime.now().year  # получаем текущий год
+
+    # Данные по месяцам текущего года
+    months_data = []
+    for month in range(1, 13):  # перебираем месяцы от января до декабря
+        start_date = datetime(current_year, month, 1)
+        end_date = datetime(current_year, month+1, 1) if month < 12 else datetime(current_year+1, 1, 1)
+        
+        # Фильтруем данные за каждый месяц отдельно
+        oral_inquiries_monthly = Voice.objects.filter(created_at__gte=start_date, created_at__lt=end_date, source='call').count()
+        written_inquiries_monthly = Voice.objects.filter( Q(source='whatsapp') | Q(source='instagram') | Q(source='site'), created_at__gte=start_date, created_at__lt=end_date).count()
+
+        # Переадресованные обращения
+        oral_redirects_monthly = VoiceAssignment.objects.filter(voice__created_at__gte=start_date, voice__created_at__lt=end_date, voice__source='call').values('voice').annotate(count=Count('id')).filter(count__gt=2).count()
+        written_redirects_monthly = VoiceAssignment.objects.filter(voice__created_at__gte=start_date, voice__created_at__lt=end_date, voice__in=Voice.objects.filter(Q(source='whatsapp') | Q(source='instagram') | Q(source='site'))).values('voice').annotate(count=Count('id')).filter(count__gt=2).count()
+
+        # Рассмотрение письменных обращений без нарушений срока
+        timely_written_inquiries_monthly = Voice.objects.filter(
+            Q(source='whatsapp') | Q(source='instagram') | Q(source='site'),
+            created_at__gte=start_date, created_at__lt=end_date,
+            created_at__lte=F('created_at') + timedelta(days=5),
+        ).annotate(is_redirected=Count('assignments')).filter(is_redirected=0).count()
+
+        # Обращения с нарушением срока рассмотрения
+        late_written_inquiries_monthly = written_redirects_monthly - timely_written_inquiries_monthly
+
+        # Формируем строку отчета для каждого месяца
+        months_data.append({
+            'Месяц': f'{start_date.month} {start_date.year}',  # Название месяца и год
+            'Общее количество устных обращений': oral_inquiries_monthly,
+            'Переадресовано устных обращений': oral_redirects_monthly,
+            'Общее количество письменных обращений': written_inquiries_monthly,
+            'Переадресовано письменных обращений': written_redirects_monthly,
+            'Рассмотрено вовремя': timely_written_inquiries_monthly,
+            'Просрочено': late_written_inquiries_monthly
+        })
+
+    # Создаем DataFrame
+    df = pd.DataFrame(months_data)
+
+    # Удаляем строки, где нет данных по обращению (например, пустые месяцы)
+    df = df.dropna(how='all', subset=['Общее количество устных обращений', 'Общее количество письменных обращений'])
+
+    # Генерируем файл Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="report_{current_year}-{datetime.now().strftime("%m-%d")}.xlsx"'
+
+    # Сохраняем DataFrame в Excel-файл
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
+
+    return response

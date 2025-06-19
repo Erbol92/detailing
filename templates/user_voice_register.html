@@ -12,6 +12,9 @@
 
 </style>
 <h2>заявки</h2>
+{% if not request.user.user_profile %}
+<h2 style="color:red">заполните профиль</h2>
+{% endif %}
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p}}
