@@ -1,17 +1,48 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<ul>
-    <li><a href="{% url 'user_voice_report' %}"><pre>1) Обращения клиентов</pre></a></li>
+<form id="dateForm">
+    <label for="startDate">Дата начала:</label>
+    <input type="date" id="startDate" name="start_date" required>
+    
+    <label for="endDate">Дата окончания:</label>
+    <input type="date" id="endDate" name="end_date" required>
+    
+    <button type="button" onclick="generateUrl()">Сгенерировать отчет</button>
+</form>
+
+<p id="reportLink"></p>
+
+
+
+<ul id="report_ul" style="display: none;">
+    <li><a class="report_url" data-base-url="{% url 'user_voice_report' %}" href="{% url 'user_voice_report' %}"><pre>1) Обращения клиентов</pre></a></li>
     <li>
-        <a href="{% url 'generate_inquiries_report' %}">
+        <a class="report_url" data-base-url="{% url 'generate_inquiries_report' %}" href="{% url 'generate_inquiries_report' %}">
             <pre>2)	Отчет об обращениях– файл, включающий в себя:
                 - поступивших устных обращений (всего, из них переадресовано);
                 - поступивших письменных обращений WhatsApp, Instagram, сайта от клиентов (всего, из них переадресовано, в том числе: рассмотренные без нарушения сроков; рассмотренные с нарушением сроков обращения);
             </pre>
         </a></li>
-    <li><a href="{% url 'profit_report' %}"><pre>3) Отчет о прибыли</pre></a></li>
-    <li><a href="{% url 'master_service_report' %}"><pre>4) Отчет о выполненных заявках </pre></a></li>
+    <li><a class="report_url" data-base-url="{% url 'profit_report' %}" href="{% url 'profit_report' %}"><pre>3) Отчет о прибыли</pre></a></li>
+    <li><a class="report_url" data-base-url="{% url 'master_service_report' %}" href="{% url 'master_service_report' %}"><pre>4) Отчет о выполненных заявках </pre></a></li>
 </ul>
+<script>
+function generateUrl() {
+    
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const urls = document.getElementsByClassName('report_url');
+    if (startDate && endDate) {
+        document.querySelector('#report_ul').style.display='block';
+        Array.from(urls).forEach((elem)=>{
+            elem.href = elem.dataset.baseUrl;
+            elem.href +=`?start_date=${startDate}&end_date=${endDate}`
+        })
+    } else {
+        alert('Пожалуйста, выберите обе даты.');
+    }
+}
+</script>
 {% endblock %}
 user_voice_report

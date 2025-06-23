@@ -11,3 +11,4 @@ urlpatterns = [
     path('master_service_report', master_service_report, name='master_service_report'),
 
 ]
+# /<str:start_date>/<str:end_date>
